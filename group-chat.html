@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Chat - CourseConnect</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .chat-display {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+        .chat-display p {
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .user-message {
+            background-color: #dcf8c6;
+            text-align: right;
+        }
+        .other-message {
+            background-color: #f1f1f1;
+            text-align: left;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-6">
+        <h1 class="text-2xl font-bold mb-4">Chat for <span id="groupName"></span></h1>
+        <div id="chatDisplay" class="chat-display bg-white p-4 rounded-lg shadow"></div>
+        <form id="chatForm" class="flex gap-2">
+            <input type="text" id="chatInput" class="flex-1 p-2 border rounded" placeholder="Type a message...">
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Send</button>
+        </form>
+        <a href="dashboard.html" class="mt-4 inline-block text-blue-500">Back to Dashboard</a>
+    </div>
+
+    <script src="group-chat.js"></script>
+</body>
+</html>
