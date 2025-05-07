@@ -1,4 +1,6 @@
-const groupName = 'Default Group'; // Static group name
+// Get group name from URL query parameter
+const urlParams = new URLSearchParams(window.location.search);
+const groupName = urlParams.get('group') || 'Default Group';
 const groupNameElement = document.getElementById('groupName');
 if (groupNameElement) {
     groupNameElement.textContent = groupName;
@@ -25,7 +27,7 @@ if (!joinedUsers.includes(currentUser.name)) {
 
 let messages = JSON.parse(localStorage.getItem(`messages_${groupName}`)) || [];
 
-// Initialize predefined messages for the default group
+// Initialize predefined messages for new groups
 if (messages.length === 0) {
     messages = [
         { text: 'Welcome to the group!', isUser: false },
@@ -143,11 +145,11 @@ function initializeDarkMode() {
     });
 }
 
-// Run dark mode initialization after DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM fully loaded');
+// Run dark mode initialization after window is loaded
+window.onload = () => {
+    console.log('Window fully loaded');
     initializeDarkMode();
-});
+};
 
 renderMessages();
 renderJoinedUsers();
