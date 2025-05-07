@@ -3,116 +3,402 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - CourseConnect</title>
+    <title>University Dashboard - CourseConnect</title>
+    <link rel="icon" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #7c3aed;
+            --secondary: #4f46e5;
+            --text-dark: #1f2937;
+            --text-light: #64748b;
+            --hover-bg: rgba(243, 244, 246, 0.8);
+            --transition: all 0.3s ease;
+        }
+
         body {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(243, 244, 246, 0.95));
             font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
             min-height: 100vh;
         }
 
         .navbar {
-            transition: all 0.3s ease;
+            position: fixed;
+            width: 100%;
+            top: 0;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: background 0.3s ease;
         }
 
         .navbar.scrolled {
             background: rgba(255, 255, 255, 1);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+        .logo img {
+            height: 40px;
+            transition: transform 0.3s ease;
+        }
+
+        .logo img:hover {
+            transform: scale(1.1);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 280px 1fr 300px;
+            gap: 2rem;
             padding: 2rem;
+            margin-top: 80px;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .sidebar, .main-content, .connections {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar::before, .main-content::before, .connections::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                transparent,
+                rgba(124, 58, 237, 0.2),
+                transparent
+            );
+            animation: rotate 8s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            100% { transform: rotate(360deg); }
         }
 
         .card {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            padding: 1.5rem;
             border-radius: 1rem;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(124, 58, 237, 0.2);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(
+                transparent,
+                rgba(124, 58, 237, 0.1),
+                transparent
+            );
+            animation: rotate 10s linear infinite;
+            z-index: -1;
+        }
+
+        .search-bar, .input-field {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid transparent;
+            border-radius: 0.5rem;
+            background: var(--hover-bg);
+            transition: var(--transition);
+        }
+
+        .search-bar:focus, .input-field:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+            transform: scale(1.02);
         }
 
         .btn {
-            transition: all 0.3s ease;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 15px rgba(124, 58, 237, 0.4);
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+        }
+
+        .btn:hover::after {
+            left: 100%;
+        }
+
+        .group-item, .connection-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            transition: var(--transition);
+        }
+
+        .group-item:hover, .connection-item:hover {
+            background: var(--hover-bg);
+            transform: translateX(5px);
         }
 
         .avatar {
-            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: var(--transition);
         }
 
-        .avatar:hover {
-            transform: scale(1.1);
+        .group-item:hover .avatar, .connection-item:hover .avatar {
+            background: var(--secondary);
         }
 
-        select, input[type="text"] {
-            transition: all 0.3s ease;
+        .progress {
+            height: 6px;
+            background: #e5e7eb;
+            margin-top: 1rem;
+            border-radius: 3px;
+            overflow: hidden;
         }
 
-        select:focus, input[type="text"]:focus {
-            border-color: #7c3aed;
-            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
-            transform: scale(1.02);
+        .progress div {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+            transition: width 0.5s ease;
         }
     </style>
 </head>
 <body>
-    <nav id="navbar" class="navbar fixed top-0 w-full py-4">
-        <div class="container mx-auto flex justify-between items-center px-4">
-            <a href="#" class="text-2xl font-bold text-gray-800">CourseConnect</a>
-            <div>
-                <a href="#" class="text-gray-600 hover:text-purple-600 mx-4">Home</a>
-                <a href="#" class="text-gray-600 hover:text-purple-600 mx-4">Profile</a>
-                <a href="#" class="text-gray-600 hover:text-purple-600 mx-4">Logout</a>
-            </div>
+    <nav class="navbar" id="navbar">
+        <a href="index.html" class="logo">
+            <img src="logo.png" alt="CourseConnect">
+        </a>
+        <div class="nav-links">
+            <a href="about.html" class="nav-link"><i class="fas fa-info-circle"></i> About</a>
+            <a href="support.html" class="nav-link"><i class="fas fa-headset"></i> Support</a>
+            <a href="campusconnect.html" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
     </nav>
 
-    <div class="container mt-20">
-        <div class="card">
-            <h2 class="text-2xl font-bold mb-4 text-gray-800">Create Study Group</h2>
-            <div class="flex flex-col md:flex-row gap-4">
-                <input type="text" id="groupName" placeholder="Group Name" class="flex-1 p-3 border rounded-lg focus:outline-none">
-                <select id="groupCourse" class="p-3 border rounded-lg focus:outline-none">
-                    <option value="" disabled selected>Select Course</option>
-                    <option value="engl101">ENGL 101</option>
-                    <option value="math115">MATH 115</option>
-                    <option value="cs101">CS 101</option>
-                </select>
-                <button onclick="createGroup()" class="btn bg-purple-600 text-white px-6 py-3 rounded-lg">Create Group</button>
+    <div class="dashboard">
+        <!-- Sidebar with University Courses -->
+        <div class="sidebar">
+            <h3 class="text-xl font-bold text-gray-800 mb-6">Your University Courses</h3>
+            <!-- Freshman Courses -->
+            <div class="card">
+                <h4 class="text-lg font-semibold text-purple-600 flex items-center gap-2">
+                    <i class="fas fa-book"></i> ENGL 101 - College Writing
+                </h4>
+                <p class="text-gray-600 mt-1">15 Study Partners</p>
+                <div class="progress">
+                    <div style="width: 80%;"></div>
+                </div>
+            </div>
+            <div class="card">
+                <h4 class="text-lg font-semibold text-purple-600 flex items-center gap-2">
+                    <i class="fas fa-calculator"></i> MATH 115 - Calculus I
+                </h4>
+                <p class="text-gray-600 mt-1">12 Study Partners</p>
+                <div class="progress">
+                    <div style="width: 65%;"></div>
+                </div>
+            </div>
+            <div class="card">
+                <h4 class="text-lg font-semibold text-purple-600 flex items-center gap-2">
+                    <i class="fas fa-flask"></i> CHEM 101 - Intro to Chemistry
+                </h4>
+                <p class="text-gray-600 mt-1">18 Study Partners</p>
+                <div class="progress">
+                    <div style="width: 70%;"></div>
+                </div>
+            </div>
+            <!-- Sophomore Courses -->
+            <div class="card">
+                <h4 class="text-lg font-semibold text-purple-600 flex items-center gap-2">
+                    <i class="fas fa-code"></i> CS 201 - Data Structures
+                </h4>
+                <p class="text-gray-600 mt-1">10 Study Partners</p>
+                <div class="progress">
+                    <div style="width: 85%;"></div>
+                </div>
+            </div>
+            <div class="card">
+                <h4 class="text-lg font-semibold text-purple-600 flex items-center gap-2">
+                    <i class="fas fa-bolt"></i> PHYS 202 - Physics II
+                </h4>
+                <p class="text-gray-600 mt-1">14 Study Partners</p>
+                <div class="progress">
+                    <div style="width: 75%;"></div>
+                </div>
             </div>
         </div>
 
-        <div class="card">
-            <h2 class="text-2xl font-bold mb-4 text-gray-800">Active Study Groups</h2>
-            <div id="groupList">
-                <div class="group-item flex items-center p-4 bg-white rounded-lg shadow mb-4">
-                    <div class="avatar w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl font-bold mr-4">W</div>
-                    <div class="flex-1">
-                        <p class="font-semibold text-gray-800">Writing Workshop</p>
-                        <p class="text-gray-600">8 members online • ENGL 101</p>
+        <!-- Main Content -->
+        <div class="main-content">
+            <input type="text" placeholder="Search coursemates or study groups..." class="search-bar" />
+            
+            <div class="card">
+                <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                    <i class="fas fa-users"></i> Create Study Group
+                </h3>
+                <input type="text" id="groupName" class="input-field" placeholder="Group Name" />
+                <select id="groupCourse" class="input-field">
+                    <option value="">Select University Course</option>
+                    <option value="engl101">ENGL 101 - College Writing</option>
+                    <option value="math115">MATH 115 - Calculus I</option>
+                    <option value="chem101">CHEM 101 - Intro to Chemistry</option>
+                    <option value="cs201">CS 201 - Data Structures</option>
+                    <option value="phys202">PHYS 202 - Physics II</option>
+                </select>
+                <button class="btn" onclick="createGroup()">Create Group</button>
+            </div>
+
+            <div class="card">
+                <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                    <i class="fas fa-user-friends"></i> Active Study Groups
+                </h3>
+                <div id="groupList">
+                    <div class="group-item flex items-center p-4 bg-white rounded-lg shadow mb-4">
+                        <div class="avatar w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl font-bold mr-4">W</div>
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800">Writing Workshop</p>
+                            <p class="text-gray-600">8 members online • ENGL 101</p>
+                        </div>
+                        <a href="group-chat.html" class="btn bg-blue-500 text-white px-4 py-2 rounded">Join Chat</a>
                     </div>
-                    <a href="group-chat.html" class="btn bg-blue-500 text-white px-4 py-2 rounded">Join Chat</a>
-                </div>
-                <div class="group-item flex items-center p-4 bg-white rounded-lg shadow mb-4">
-                    <div class="avatar w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl font-bold mr-4">C</div>
-                    <div class="flex-1">
-                        <p class="font-semibold text-gray-800">Calculus Crew</p>
-                        <p class="text-gray-600">5 members online • MATH 115</p>
+                    <div class="group-item flex items-center p-4 bg-white rounded-lg shadow mb-4">
+                        <div class="avatar w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl font-bold mr-4">C</div>
+                        <div class="flex-1">
+                            <p class="font-semibold text-gray-800">Calculus Crew</p>
+                            <p class="text-gray-600">5 members online • MATH 115</p>
+                        </div>
+                        <a href="group-chat.html" class="btn bg-blue-500 text-white px-4 py-2 rounded">Join Chat</a>
                     </div>
-                    <a href="group-chat.html" class="btn bg-blue-500 text-white px-4 py-2 rounded">Join Chat</a>
                 </div>
+            </div>
+        </div>
+
+        <!-- Connections Panel -->
+        <div class="connections">
+            <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <i class="fas fa-user-plus"></i> University Connections
+            </h3>
+            <input type="text" placeholder="Search for coursemates..." class="input-field" />
+            <div class="connection-item">
+                <div class="avatar">J</div>
+                <div>
+                    <p class="font-semibold text-gray-800">John Doe</p>
+                    <p class="text-gray-600">CS 201 • Online</p>
+                </div>
+                <button class="btn" style="margin-left: auto; padding: 0.5rem 1rem;">Add</button>
+            </div>
+            <div class="connection-item">
+                <div class="avatar">S</div>
+                <div>
+                    <p class="font-semibold text-gray-800">Sarah Smith</p>
+                    <p class="text-gray-600">CHEM 101 • Offline</p>
+                </div>
+                <button class="btn" style="margin-left: auto; padding: 0.5rem 1rem;">Add</button>
+            </div>
+            <div class="connection-item">
+                <div class="avatar">M</div>
+                <div>
+                    <p class="font-semibold text-gray-800">Mike Chen</p>
+                    <p class="text-gray-600">PHYS 202 • Online</p>
+                </div>
+                <button class="btn" style="margin-left: auto; padding: 0.5rem 1rem;">Add</button>
             </div>
         </div>
     </div>

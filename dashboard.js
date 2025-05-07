@@ -1,59 +1,55 @@
-window.addEventListener('scroll', () => {
-    const navbar = document.getElementById('navbar');
-    if (navbar) {
-        if (window.scrollY > 50) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
-    } else {
-        console.error('navbar element not found');
+const urlParams = new URLSearchParams(window.location.search);
+const groupName = urlParams.get('group');
+if (!groupName) {
+   // alert('No group specified');
+   // window.location.href = 'dashboard.html';
+}
+document.getElementById('groupName').textContent = groupName;
+
+let messages = JSON.parse(localStorage.getItem(`messages_${groupName}`)) || [];
+
+// Initialize predefined messages for known groups
+if (messages.length === 0 && ['Writing Workshop', 'Calculus Crew'].includes(groupName)) {
+    messages = [
+        { text: 'Welcome to the group!', isUser: false },
+        { text: 'Feel free to ask questions.', isUser: false }
+    ];
+}
+
+function saveMessages() {
+    localStorage.setItem(`messages_${groupName}`, JSON.stringify(messages));
+}
+
+function renderMessages() {
+    const chatDisplay = document.getElementById('chatDisplay');
+    chatDisplay.innerHTML = '';
+    messages.forEach(msg => {
+        const p = document.createElement('p');
+        p.textContent = msg.text;
+        p.className = msg.isUser ? 'user-message' : 'other-message';
+        chatDisplay.appendChild(p);
+    });
+    chatDisplay.scrollTop = chatDisplay.scrollHeight;
+}
+
+document.getElementById('chatForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
+    if (message) {
+        messages.push({ text: message, isUser: true });
+        saveMessages();
+        renderMessages();
+        input.value = '';
     }
 });
 
-function createGroup() {
-    console.log('createGroup called');
-    const groupNameInput = document.getElementById('groupName');
-    const groupCourseSelect = document.getElementById('groupCourse');
-    const groupList = document.getElementById('groupList');
+// Simulate receiving messages
+setInterval(() => {
+    const randomMessage = 'New message from another user';
+    messages.push({ text: randomMessage, isUser: false });
+    saveMessages();
+    renderMessages();
+}, 5000);
 
-    if (!groupNameInput || !groupCourseSelect || !groupList) {
-        console.error('Form elements not found:', {
-            groupNameInput: !!groupNameInput,
-            groupCourseSelect: !!groupCourseSelect,
-            groupList: !!groupList
-        });
-        return;
-    }
-
-    const groupName = groupNameInput.value.trim();
-    const courseValue = groupCourseSelect.value;
-
-    if (!groupName || !courseValue) {
-        console.warn('Group name or course not provided');
-        alert('Please enter a group name and select a course!');
-        return;
-    }
-
-    const courseText = groupCourseSelect.options[groupCourseSelect.selectedIndex].text;
-    console.log('Creating group:', { groupName, courseText });
-
-    const newGroup = document.createElement('div');
-    newGroup.className = 'group-item flex items-center p-4 bg-white rounded-lg shadow mb-4';
-    newGroup.innerHTML = `
-        <div class="avatar w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl font-bold mr-4">${groupName[0].toUpperCase()}</div>
-        <div class="flex-1">
-            <p class="font-semibold text-gray-800">${groupName}</p>
-            <p class="text-gray-600">1 member online • ${courseText}</p>
-        </div>
-        <a href="group-chat.html?group=${encodeURIComponent(groupName)}" class="btn bg-blue-500 text-white px-4 py-2 rounded">Join Chat</a>
-    `;
-
-    groupList.appendChild(newGroup);
-    console.log('Group appended to groupList');
-
-    groupNameInput.value = '';
-    groupCourseSelect.value = '';
-    console.log('Redirecting to group chat:', groupName);
-    window.location.href = `group-chat.html?group=${encodeURIComponent(groupName)}`;
-}
+renderMessages();
